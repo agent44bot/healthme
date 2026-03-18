@@ -16,12 +16,6 @@ class ActivitiesController < ApplicationController
       .order(created_at: :desc)
       .pick(:created_at)
     dismissed = session[:dismissed_repeat_ids] || []
-    @prev_activities = filter_by_time_period(
-      filter_already_added(
-        current_user.activities.on_date(@date - 1.day).order(:category, :created_at),
-        @activities
-      )
-    ).reject { |a| dismissed.include?(a.id) }
     @time_period = current_time_period
     @daily_repeats = filter_already_added(
       current_user.activities.where(repeat_daily: true)
@@ -31,6 +25,13 @@ class ActivitiesController < ApplicationController
         .uniq { |a| activity_signature(a) },
       @activities
     )
+    daily_signatures = @daily_repeats.map { |a| activity_signature(a) }
+    @prev_activities = filter_by_time_period(
+      filter_already_added(
+        current_user.activities.on_date(@date - 1.day).order(:category, :created_at),
+        @activities
+      )
+    ).reject { |a| dismissed.include?(a.id) || daily_signatures.include?(activity_signature(a)) }
     @yesterday_totals = current_user.activities
       .on_date(@date - 1.day)
       .where(category: %w[weights yoga])
