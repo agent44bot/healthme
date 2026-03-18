@@ -82,7 +82,7 @@ jobs:
 
       - name: Run Maestro tests
         run: |
-          maestro test .maestro/ --format junit --output maestro-report.xml
+          maestro record .maestro/ --format junit --output maestro-report.xml
 
       - name: Upload Maestro test report
         uses: actions/upload-artifact@v4
@@ -90,6 +90,14 @@ jobs:
         with:
           name: maestro-report
           path: maestro-report.xml
+          if-no-files-found: ignore
+
+      - name: Upload Maestro recordings
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-recordings
+          path: ~/.maestro/tests/**/*.mp4
           if-no-files-found: ignore
 
       - name: Upload Maestro screenshots
