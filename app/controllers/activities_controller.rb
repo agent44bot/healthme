@@ -161,6 +161,7 @@ class ActivitiesController < ApplicationController
     target_date = params[:date] ? Date.parse(params[:date]) : Time.zone.today
     new_activity = @activity.dup
     new_activity.performed_on = target_date
+    new_activity.performed_time = Time.current
     @activity.photos.each { |photo| new_activity.photos.attach(photo.blob) }
     new_activity.save!
     redirect_to activities_path(date: new_activity.performed_on), notice: "Activity logged!"
