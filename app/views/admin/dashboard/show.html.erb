@@ -1,0 +1,210 @@
+<div class="container admin-container" data-controller="admin-charts"
+     data-admin-charts-url-value="<%= admin_data_path %>">
+
+  <header class="app-header">
+    <h1>Admin Dashboard</h1>
+    <p class="tagline">User analytics &amp; visit tracking</p>
+  </header>
+
+  <%# Overview Cards %>
+  <div class="admin-stats-grid">
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Total Users</span>
+      <span class="admin-stat-number"><%= @total_users %></span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Active Today</span>
+      <span class="admin-stat-number"><%= @active_users_today %></span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Active This Week</span>
+      <span class="admin-stat-number"><%= @active_users_week %></span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Active This Month</span>
+      <span class="admin-stat-number"><%= @active_users_month %></span>
+    </div>
+  </div>
+
+  <div class="admin-stats-grid">
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Visits Today</span>
+      <span class="admin-stat-number"><%= @visits_today %></span>
+      <span class="admin-stat-detail"><%= @unique_visitors_today %> unique</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Visits This Week</span>
+      <span class="admin-stat-number"><%= @visits_this_week %></span>
+      <span class="admin-stat-detail"><%= @unique_visitors_week %> unique</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Visits This Month</span>
+      <span class="admin-stat-number"><%= @visits_this_month %></span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Total Visits</span>
+      <span class="admin-stat-number"><%= @total_visits %></span>
+    </div>
+  </div>
+
+  <%# Device & Platform Breakdown %>
+  <div class="admin-row">
+    <div class="chart-card admin-half">
+      <h3 class="chart-title">Device Breakdown</h3>
+      <canvas data-admin-charts-target="deviceChart"></canvas>
+      <div class="admin-breakdown-list">
+        <% @device_counts.each do |device, count| %>
+          <div class="admin-breakdown-row">
+            <span class="admin-breakdown-label"><%= (device || "unknown").titleize %></span>
+            <span class="admin-breakdown-value"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="chart-card admin-half">
+      <h3 class="chart-title">Platform</h3>
+      <canvas data-admin-charts-target="platformChart"></canvas>
+      <div class="admin-breakdown-list">
+        <% @platform_counts.each do |platform, count| %>
+          <div class="admin-breakdown-row">
+            <span class="admin-breakdown-label"><%= (platform || "unknown").titleize.gsub("Ios App", "iOS App") %></span>
+            <span class="admin-breakdown-value"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Visits Over Time Chart %>
+  <div class="chart-card">
+    <h3 class="chart-title">Visits Over Time (30 days)</h3>
+    <canvas data-admin-charts-target="visitsChart"></canvas>
+  </div>
+
+  <%# Mobile vs Desktop Over Time %>
+  <div class="chart-card">
+    <h3 class="chart-title">Mobile vs Desktop (30 days)</h3>
+    <canvas data-admin-charts-target="mobileDesktopChart"></canvas>
+  </div>
+
+  <%# Signups Over Time %>
+  <div class="chart-card">
+    <h3 class="chart-title">New Signups (30 days)</h3>
+    <canvas data-admin-charts-target="signupsChart"></canvas>
+  </div>
+
+  <%# Browser & OS %>
+  <div class="admin-row">
+    <div class="chart-card admin-half">
+      <h3 class="chart-title">Browsers (30 days)</h3>
+      <canvas data-admin-charts-target="browserChart"></canvas>
+      <div class="admin-breakdown-list">
+        <% @browser_counts.each do |browser, count| %>
+          <div class="admin-breakdown-row">
+            <span class="admin-breakdown-label"><%= browser %></span>
+            <span class="admin-breakdown-value"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="chart-card admin-half">
+      <h3 class="chart-title">Operating Systems (30 days)</h3>
+      <canvas data-admin-charts-target="osChart"></canvas>
+      <div class="admin-breakdown-list">
+        <% @os_counts.each do |os, count| %>
+          <div class="admin-breakdown-row">
+            <span class="admin-breakdown-label"><%= os %></span>
+            <span class="admin-breakdown-value"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Top Pages %>
+  <div class="chart-card">
+    <h3 class="chart-title">Top Pages (30 days)</h3>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Path</th>
+          <th>Visits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @top_pages.each do |path, count| %>
+          <tr>
+            <td class="mono-field"><%= path %></td>
+            <td><%= count %></td>
+          </tr>
+        <% end %>
+        <% if @top_pages.empty? %>
+          <tr><td colspan="2" style="color: var(--color-text-muted); text-align: center;">No data yet</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Users List %>
+  <div class="chart-card">
+    <h3 class="chart-title">Recent Users</h3>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Joined</th>
+          <th>Activities</th>
+          <th>Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.display_name.presence || user.short_npub %></td>
+            <td><%= user.created_at.strftime("%b %d, %Y") %></td>
+            <td><%= user.activities.count %></td>
+            <td><%= user.profile_complete? ? "Complete" : "Incomplete" %></td>
+          </tr>
+        <% end %>
+        <% if @users.empty? %>
+          <tr><td colspan="4" style="color: var(--color-text-muted); text-align: center;">No users yet</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Recent Visits %>
+  <div class="chart-card">
+    <h3 class="chart-title">Recent Visits</h3>
+    <div class="admin-visits-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Path</th>
+            <th>Device</th>
+            <th>Platform</th>
+            <th>Browser</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_visits.each do |visit| %>
+            <tr>
+              <td><%= visit.created_at.strftime("%b %d %H:%M") %></td>
+              <td><%= visit.user&.display_name.presence || visit.user&.short_npub || visit.ip_address %></td>
+              <td class="mono-field"><%= visit.path %></td>
+              <td><%= visit.device_type&.titleize || "—" %></td>
+              <td><%= (visit.platform || "—").titleize.gsub("Ios App", "iOS App") %></td>
+              <td><%= visit.browser || "—" %></td>
+            </tr>
+          <% end %>
+          <% if @recent_visits.empty? %>
+            <tr><td colspan="6" style="color: var(--color-text-muted); text-align: center;">No visits yet</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

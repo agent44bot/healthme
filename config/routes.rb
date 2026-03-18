@@ -20,6 +20,11 @@ Rails.application.routes.draw do
     get :diet_tips, on: :collection
   end
 
+  namespace :admin do
+    get "/", to: "dashboard#show", as: :dashboard
+    get "data", to: "dashboard#data"
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "activities#index"

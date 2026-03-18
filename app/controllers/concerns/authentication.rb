@@ -16,8 +16,19 @@ module Authentication
   end
 
   def require_authentication
+    auto_login_in_development
     unless signed_in?
       redirect_to new_session_path, alert: "Please sign in to continue."
+    end
+  end
+
+  def auto_login_in_development
+    return unless Rails.env.development?
+    return if signed_in?
+
+    if (user = User.find_by(admin: true))
+      set_current_user(user)
+      @current_user = user
     end
   end
 

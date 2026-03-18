@@ -1345,3 +1345,102 @@ select.form-input { appearance: auto; }
 .toggle-switch input:checked + .toggle-slider::before {
   transform: translateX(22px);
 }
+
+/* Admin Dashboard */
+.admin-container {
+  max-width: 900px;
+}
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.admin-stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.admin-stat-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+.admin-stat-number {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+.admin-stat-detail {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+.admin-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.admin-half {
+  flex: 1;
+  min-width: 0;
+}
+.admin-breakdown-list {
+  margin-top: 12px;
+}
+.admin-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+.admin-breakdown-row:last-child { border-bottom: none; }
+.admin-breakdown-label { color: var(--color-text); }
+.admin-breakdown-value { font-weight: 700; color: var(--color-primary); }
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.admin-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.admin-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-visits-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 640px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-row {
+    flex-direction: column;
+  }
+  .admin-stat-number {
+    font-size: 22px;
+  }
+}

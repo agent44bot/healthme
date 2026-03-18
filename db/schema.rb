@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_182114) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_18_123304) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -71,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_182114) do
 
   create_table "users", force: :cascade do |t|
     t.string "activity_level", default: "moderately_active"
+    t.boolean "admin", default: false, null: false
     t.string "anthropic_api_key"
     t.integer "blood_pressure_diastolic"
     t.integer "blood_pressure_systolic"
@@ -94,7 +95,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_182114) do
     t.index ["pubkey_hex"], name: "index_users_on_pubkey_hex", unique: true
   end
 
+  create_table "visits", force: :cascade do |t|
+    t.string "browser"
+    t.datetime "created_at", null: false
+    t.string "device_type"
+    t.string "ip_address"
+    t.string "method", default: "GET"
+    t.string "os"
+    t.string "path"
+    t.string "platform"
+    t.string "referrer"
+    t.integer "status_code"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id"
+    t.index ["created_at"], name: "index_visits_on_created_at"
+    t.index ["device_type"], name: "index_visits_on_device_type"
+    t.index ["platform"], name: "index_visits_on_platform"
+    t.index ["user_id"], name: "index_visits_on_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "users"
+  add_foreign_key "visits", "users"
 end

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :activities, dependent: :destroy
+  has_many :visits, dependent: :nullify
   encrypts :anthropic_api_key
 
   SEXES = %w[male female other].freeze
