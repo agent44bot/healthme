@@ -1,0 +1,100 @@
+name: iOS Simulator Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios-maestro:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # ── Ruby & Rails ──────────────────────────────────────
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+
+      - name: Start Rails server
+        run: |
+          bin/rails server -b 0.0.0.0 -p 3000 -e test &
+          # Wait for server to be ready
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3000 > /dev/null && break
+            sleep 1
+          done
+
+      # ── Node & Capacitor ──────────────────────────────────
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Override Capacitor config for CI
+        run: cp capacitor.config.ci.ts capacitor.config.ts
+
+      - name: Sync Capacitor iOS project
+        run: npx cap sync ios
+
+      # ── Xcode Build ───────────────────────────────────────
+      - name: Build iOS app for simulator
+        run: |
+          xcodebuild build \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || true
+
+      # ── Maestro ───────────────────────────────────────────
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Boot iOS Simulator
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep "iPhone 16" | head -1 | grep -oE '[0-9A-F-]{36}')
+          xcrun simctl boot "$DEVICE" || true
+          # Wait for simulator to finish booting
+          xcrun simctl bootstatus "$DEVICE" -b
+
+      - name: Install app on simulator
+        run: |
+          APP_PATH=$(find build -name "*.app" -path "*/Debug-iphonesimulator/*" | head -1)
+          xcrun simctl install booted "$APP_PATH"
+
+      - name: Run Maestro tests
+        run: |
+          maestro test .maestro/ --format junit --output maestro-report.xml
+
+      - name: Upload Maestro test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-report
+          path: maestro-report.xml
+          if-no-files-found: ignore
+
+      - name: Upload Maestro screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: maestro-screenshots
+          path: ~/.maestro/tests/**/*.png
+          if-no-files-found: ignore

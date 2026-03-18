@@ -1,0 +1,7 @@
+appId: dev.fly.healthme
+---
+# Verify the app launches and the web view loads
+- launchApp
+- extendedWaitUntil:
+    visible: "HealthMe"
+    timeout: 20000

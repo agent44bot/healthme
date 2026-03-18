@@ -1,0 +1,22 @@
+appId: dev.fly.healthme
+---
+# Verify switching between auth tabs on the login page
+- launchApp
+- extendedWaitUntil:
+    visible: "Sign in with your keypair"
+    timeout: 20000
+
+# Default tab should show Generate Keypair
+- assertVisible: "Generate Keypair"
+
+# Switch to "I Have a Key" tab
+- tapOn: "I Have a Key"
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 10000
+
+# Switch back to "New Keypair" tab
+- tapOn: "New Keypair"
+- extendedWaitUntil:
+    visible: "Generate Keypair"
+    timeout: 10000

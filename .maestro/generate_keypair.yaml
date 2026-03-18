@@ -1,0 +1,16 @@
+appId: dev.fly.healthme
+---
+# Verify tapping Generate Keypair triggers key generation
+- launchApp
+- extendedWaitUntil:
+    visible: "HealthMe"
+    timeout: 30000
+- extendedWaitUntil:
+    visible: "Generate Keypair"
+    timeout: 15000
+- tapOn: "Generate Keypair"
+
+# After generating, the app should navigate away from login
+- extendedWaitUntil:
+    notVisible: "Sign in with your keypair"
+    timeout: 30000

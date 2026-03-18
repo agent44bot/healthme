@@ -1,0 +1,10 @@
+appId: dev.fly.healthme
+---
+# Verify the login page renders with expected UI elements
+- launchApp
+- extendedWaitUntil:
+    visible: "Sign in with your keypair"
+    timeout: 20000
+- assertVisible: "New Keypair"
+- assertVisible: "I Have a Key"
+- assertVisible: "Generate Keypair"
