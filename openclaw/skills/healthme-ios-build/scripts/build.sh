@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# HealthMe iOS Build Script
+# Usage: build.sh [--target simulator|device] [--config Debug|Release] [--clean] [--sync-only] [--install]
+
+APP_PATH="${HEALTHME_APP_PATH:-/Users/agent44/apps/healthme}"
+TARGET="simulator"
+CONFIG="Debug"
+CLEAN=false
+SYNC_ONLY=false
+INSTALL=false
+SIMULATOR_NAME="iPhone 16"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --target)    TARGET="$2"; shift 2 ;;
+    --config)    CONFIG="$2"; shift 2 ;;
+    --clean)     CLEAN=true; shift ;;
+    --sync-only) SYNC_ONLY=true; shift ;;
+    --install)   INSTALL=true; shift ;;
+    --simulator) SIMULATOR_NAME="$2"; shift 2 ;;
+    *) echo "Unknown option: $1"; exit 1 ;;
+  esac
+done
+
+cd "$APP_PATH"
+
+echo "=== HealthMe iOS Build ==="
+echo "  Project: $APP_PATH"
+echo "  Target:  $TARGET"
+echo "  Config:  $CONFIG"
+echo ""
+
+# Step 1: npm install (if node_modules missing)
+if [ ! -d "node_modules" ]; then
+  echo ">>> Installing npm dependencies..."
+  npm ci
+else
+  echo ">>> node_modules present, skipping npm install"
+fi
+
+# Step 2: Capacitor sync
+echo ">>> Running npx cap sync ios..."
+npx cap sync ios
+echo ">>> Capacitor sync complete"
+
+if [ "$SYNC_ONLY" = true ]; then
+  echo ""
+  echo "=== Sync-only mode — done ==="
+  exit 0
+fi
+
+# Step 3: Clean if requested
+if [ "$CLEAN" = true ]; then
+  echo ">>> Cleaning build artifacts..."
+  xcodebuild clean \
+    -project ios/App/App.xcodeproj \
+    -scheme App \
+    -configuration "$CONFIG" \
+    -derivedDataPath build/ios \
+    -quiet 2>&1 || true
+  echo ">>> Clean complete"
+fi
+
+# Step 4: Build
+echo ">>> Building for $TARGET ($CONFIG)..."
+
+if [ "$TARGET" = "simulator" ]; then
+  xcodebuild build \
+    -project ios/App/App.xcodeproj \
+    -scheme App \
+    -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=latest" \
+    -configuration "$CONFIG" \
+    -derivedDataPath build/ios \
+    CODE_SIGNING_ALLOWED=NO \
+    2>&1 | tail -20
+
+  APP_BUNDLE="build/ios/Build/Products/$CONFIG-iphonesimulator/App.app"
+
+  if [ -d "$APP_BUNDLE" ]; then
+    echo ""
+    echo "=== BUILD SUCCEEDED ==="
+    echo "  Output: $APP_BUNDLE"
+    echo "  Size:   $(du -sh "$APP_BUNDLE" | cut -f1)"
+
+    # Step 5: Install on simulator if requested
+    if [ "$INSTALL" = true ]; then
+      echo ""
+      echo ">>> Booting simulator '$SIMULATOR_NAME'..."
+      xcrun simctl boot "$SIMULATOR_NAME" 2>/dev/null || true
+      echo ">>> Installing app on simulator..."
+      xcrun simctl install booted "$APP_BUNDLE"
+      echo ">>> Launching app..."
+      xcrun simctl launch booted dev.fly.healthme
+      echo ">>> App launched on $SIMULATOR_NAME"
+    fi
+  else
+    echo ""
+    echo "=== BUILD FAILED ==="
+    echo "  Expected output not found at: $APP_BUNDLE"
+    exit 1
+  fi
+
+elif [ "$TARGET" = "device" ]; then
+  xcodebuild build \
+    -project ios/App/App.xcodeproj \
+    -scheme App \
+    -configuration "$CONFIG" \
+    -derivedDataPath build/ios \
+    CODE_SIGN_IDENTITY="iPhone Developer" \
+    DEVELOPMENT_TEAM=MKN95GAN66 \
+    2>&1 | tail -20
+
+  echo ""
+  echo "=== DEVICE BUILD COMPLETE ==="
+
+elif [ "$TARGET" = "archive" ]; then
+  ARCHIVE_PATH="build/ios/HealthMe.xcarchive"
+  xcodebuild archive \
+    -project ios/App/App.xcodeproj \
+    -scheme App \
+    -configuration Release \
+    -archivePath "$ARCHIVE_PATH" \
+    CODE_SIGN_IDENTITY="iPhone Developer" \
+    DEVELOPMENT_TEAM=MKN95GAN66 \
+    2>&1 | tail -20
+
+  if [ -d "$ARCHIVE_PATH" ]; then
+    echo ""
+    echo "=== ARCHIVE SUCCEEDED ==="
+    echo "  Output: $ARCHIVE_PATH"
+  else
+    echo "=== ARCHIVE FAILED ==="
+    exit 1
+  fi
+fi
