@@ -131,6 +131,7 @@ export default class extends Controller {
       }
     } else {
       await this.storage.set({ key: "biometric_enabled", value: "false" })
+      await this.storage.remove({ key: "stored_nsec" })
     }
   }
 
