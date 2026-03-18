@@ -34,7 +34,7 @@ module ActivitiesHelper
   end
 
   def activity_tag_label(activity)
-    parts = [category_icon(activity.category)]
+    parts = [ category_icon(activity.category) ]
     if activity.notes.present?
       parts << activity.notes.truncate(30)
     elsif activity.display_value

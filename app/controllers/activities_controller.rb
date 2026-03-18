@@ -41,7 +41,7 @@ class ActivitiesController < ApplicationController
 
   def dismiss_repeat
     session[:dismissed_repeat_ids] ||= []
-    session[:dismissed_repeat_ids] |= [@activity.id]
+    session[:dismissed_repeat_ids] |= [ @activity.id ]
     head :ok
   end
 
@@ -211,7 +211,7 @@ class ActivitiesController < ApplicationController
   end
 
   def activity_signature(activity)
-    [activity.category, activity.value.to_f, activity.unit, activity.calories.to_i, activity.notes]
+    [ activity.category, activity.value.to_f, activity.unit, activity.calories.to_i, activity.notes ]
   end
 
   def current_time_period

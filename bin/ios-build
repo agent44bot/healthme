@@ -4,7 +4,8 @@ set -euo pipefail
 # HealthMe iOS Build Script
 # Usage: build.sh [--target simulator|device] [--config Debug|Release] [--clean] [--sync-only] [--install]
 
-APP_PATH="${HEALTHME_APP_PATH:-/Users/agent44/apps/healthme}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_PATH="${HEALTHME_APP_PATH:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 TARGET="simulator"
 CONFIG="Debug"
 CLEAN=false

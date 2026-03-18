@@ -1,11 +1,11 @@
 namespace :admin do
   desc "Grant admin to a user by ID or first user if no ID given"
-  task :grant, [:user_id] => :environment do |_t, args|
+  task :grant, [ :user_id ] => :environment do |_t, args|
     user = if args[:user_id]
-             User.find(args[:user_id])
-           else
-             User.first
-           end
+      User.find(args[:user_id])
+    else
+      User.first
+    end
 
     if user
       user.update!(admin: true)

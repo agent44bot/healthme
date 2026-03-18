@@ -23,49 +23,49 @@ class Visit < ApplicationRecord
     # Platform detection: Capacitor iOS app vs web
     self.platform = if ua.include?("capacitor") || ua.include?("healthme")
                       "ios_app"
-                    else
+    else
                       "web"
-                    end
+    end
 
     # Device type detection
     self.device_type = if ua.match?(/ipad|tablet|kindle|silk/)
                          "tablet"
-                       elsif ua.match?(/iphone|ipod|android.*mobile|mobile|opera mini|iemobile/)
+    elsif ua.match?(/iphone|ipod|android.*mobile|mobile|opera mini|iemobile/)
                          "mobile"
-                       else
+    else
                          "desktop"
-                       end
+    end
 
     # Browser detection
     self.browser = if ua.include?("crios")
                      "Chrome iOS"
-                   elsif ua.include?("fxios")
+    elsif ua.include?("fxios")
                      "Firefox iOS"
-                   elsif ua.include?("edg")
+    elsif ua.include?("edg")
                      "Edge"
-                   elsif ua.include?("chrome") && !ua.include?("chromium")
+    elsif ua.include?("chrome") && !ua.include?("chromium")
                      "Chrome"
-                   elsif ua.include?("safari") && !ua.include?("chrome")
+    elsif ua.include?("safari") && !ua.include?("chrome")
                      "Safari"
-                   elsif ua.include?("firefox")
+    elsif ua.include?("firefox")
                      "Firefox"
-                   else
+    else
                      "Other"
-                   end
+    end
 
     # OS detection
     self.os = if ua.include?("iphone") || ua.include?("ipad") || ua.include?("ipod")
                 "iOS"
-              elsif ua.include?("mac os")
+    elsif ua.include?("mac os")
                 "macOS"
-              elsif ua.include?("android")
+    elsif ua.include?("android")
                 "Android"
-              elsif ua.include?("windows")
+    elsif ua.include?("windows")
                 "Windows"
-              elsif ua.include?("linux")
+    elsif ua.include?("linux")
                 "Linux"
-              else
+    else
                 "Other"
-              end
+    end
   end
 end

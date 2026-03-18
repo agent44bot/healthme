@@ -78,7 +78,7 @@ class HealthCalculator
   def daily_calories(tdee_val = nil)
     tdee_val ||= tdee
     adjustment = GOAL_ADJUSTMENTS[user.goal] || 0
-    [tdee_val + adjustment, 1200].max
+    [ tdee_val + adjustment, 1200 ].max
   end
 
   def water_intake
@@ -91,10 +91,10 @@ class HealthCalculator
 
   def macro_breakdown(calories)
     ratios = case user.goal
-             when "lose_weight"  then { protein: 0.40, carbs: 0.30, fat: 0.30 }
-             when "gain_muscle"  then { protein: 0.35, carbs: 0.40, fat: 0.25 }
-             else                     { protein: 0.30, carbs: 0.40, fat: 0.30 }
-             end
+    when "lose_weight"  then { protein: 0.40, carbs: 0.30, fat: 0.30 }
+    when "gain_muscle"  then { protein: 0.35, carbs: 0.40, fat: 0.25 }
+    else                     { protein: 0.30, carbs: 0.40, fat: 0.30 }
+    end
 
     {
       protein: (calories * ratios[:protein] / 4.0).round(0),
