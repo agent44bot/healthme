@@ -11,6 +11,7 @@ appId: dev.fly.healthme
 - tapOn: "Generate Keypair"
 
 # After generating, the app should navigate away from login
+# Give extra time for crypto + session creation in CI
 - extendedWaitUntil:
-    notVisible: "Sign in with your keypair"
-    timeout: 30000
+    visible: "Home"
+    timeout: 45000
