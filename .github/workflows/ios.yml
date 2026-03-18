@@ -10,6 +10,7 @@ jobs:
 
     env:
       RAILS_ENV: test
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: 300000
 
     steps:
       - name: Checkout code
@@ -80,8 +81,6 @@ jobs:
           xcrun simctl install booted "$APP_PATH"
 
       - name: Run Maestro tests
-        env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
         run: |
           maestro test .maestro/ --format junit --output maestro-report.xml
 
