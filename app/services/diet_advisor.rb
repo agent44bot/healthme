@@ -11,16 +11,17 @@ class DietAdvisor
   # @param recommendations [Hash, nil] from HealthCalculator
   # @return [String, nil] markdown-formatted tips or nil
   def self.advise(user:, activities:, recommendations:, last_food_at: nil, question: nil)
-    api_key = user.anthropic_api_key.presence || ENV["ANTHROPIC_API_KEY"]
-    return nil unless api_key.present?
-    return nil unless user.profile_complete?
+    api_key = user.effective_api_key
+    return { error: "no_api_key" } unless api_key.present?
+    return { error: "profile_incomplete" } unless user.profile_complete?
 
     prompt = build_prompt(user, activities, recommendations, last_food_at, question)
     response = call_api(api_key, prompt)
-    parse_response(response)
+    result = parse_response(response)
+    result || { error: "api_failed" }
   rescue StandardError => e
     Rails.logger.warn("DietAdvisor error: #{e.message}")
-    nil
+    { error: "api_failed", detail: e.message }
   end
 
   private_class_method def self.build_prompt(user, activities, recs, last_food_at, question)

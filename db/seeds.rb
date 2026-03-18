@@ -25,3 +25,14 @@ end
 admin.update!(admin: true) unless admin.admin?
 
 puts "Admin user ready: #{admin.display_name} (#{admin.short_npub})"
+
+# Violet — also gets the system API key
+violet = User.find_or_create_by!(pubkey_hex: "025e3b721fe0ab4e99d144bc94d66d8b283eb4ced02b84087ca2e65f7cc47803") do |u|
+  u.npub = "npub1qf0rkusluz45axw3gj7ff4nd3v5radxw6q4cgzru5tn97lxy0qps8r8lxz"
+  u.display_name = "Vi"
+  u.admin = true
+end
+
+violet.update!(admin: true) unless violet.admin?
+
+puts "Admin user ready: #{violet.display_name} (#{violet.short_npub})"

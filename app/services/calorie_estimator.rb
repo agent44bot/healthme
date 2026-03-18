@@ -13,7 +13,7 @@ class CalorieEstimator
   # @param unit [String, nil] Unit (e.g. "cup")
   # @return [Hash, nil] { calories: Integer, description: String } or nil
   def self.estimate(images: [], notes: nil, category: nil, value: nil, unit: nil, health_concerns: nil, api_key: nil)
-    api_key = api_key.presence || ENV["ANTHROPIC_API_KEY"]
+    api_key = api_key.presence
     return nil unless api_key.present?
     return nil if images.empty? && notes.blank?
 

@@ -125,13 +125,17 @@ export default class extends Controller {
 
     try {
       const response = await fetch(url)
-      if (!response.ok) throw new Error("Failed to load tips")
-
       const data = await response.json()
-      this.contentTarget.innerHTML = this.#formatTips(data.tips)
-      this.buttonTarget.textContent = "Refresh Tips"
+
+      if (!response.ok) {
+        this.contentTarget.innerHTML = `<p class="tips-error">${data.error || "Could not generate tips."}</p>`
+        this.buttonTarget.textContent = "Get Daily Tips"
+      } else {
+        this.contentTarget.innerHTML = this.#formatTips(data.tips)
+        this.buttonTarget.textContent = "Refresh Tips"
+      }
     } catch (e) {
-      this.contentTarget.innerHTML = '<p class="tips-error">Could not generate tips. Make sure you have activities logged and an API key configured.</p>'
+      this.contentTarget.innerHTML = '<p class="tips-error">Could not generate tips. Please try again later.</p>'
       this.buttonTarget.textContent = "Get Daily Tips"
     }
 

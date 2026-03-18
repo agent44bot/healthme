@@ -87,7 +87,7 @@ class ActivitiesController < ApplicationController
       value: params[:value],
       unit: params[:unit],
       health_concerns: current_user.health_concerns,
-      api_key: current_user.anthropic_api_key
+      api_key: current_user.effective_api_key
     )
 
     if result
@@ -178,7 +178,7 @@ class ActivitiesController < ApplicationController
       .order(created_at: :desc)
       .pick(:created_at)
 
-    tips = DietAdvisor.advise(
+    result = DietAdvisor.advise(
       user: current_user,
       activities: activities,
       recommendations: recommendations,
@@ -186,10 +186,20 @@ class ActivitiesController < ApplicationController
       question: params[:question].presence
     )
 
-    if tips
-      render json: { tips: tips }
+    if result.is_a?(String)
+      render json: { tips: result }
+    elsif result.is_a?(Hash) && result[:error]
+      message = case result[:error]
+      when "no_api_key"
+        "No API key configured. Add your Anthropic API key in your profile settings."
+      when "profile_incomplete"
+        "Please complete your profile (weight, height, date of birth, sex) to get tips."
+      else
+        "Could not generate tips. Please try again later."
+      end
+      render json: { error: message }, status: :unprocessable_entity
     else
-      render json: { error: "Could not generate tips" }, status: :unprocessable_entity
+      render json: { error: "Could not generate tips. Please try again later." }, status: :unprocessable_entity
     end
   end
 

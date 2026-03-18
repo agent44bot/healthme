@@ -32,6 +32,13 @@ class User < ApplicationRecord
     weight.present? && height.present? && date_of_birth.present? && sex.present?
   end
 
+  # Returns the API key to use for AI features.
+  # Users with their own key always use it. The system key (ENV) is only
+  # available to admin users — everyone else must provide their own.
+  def effective_api_key
+    anthropic_api_key.presence || (admin? ? ENV["ANTHROPIC_API_KEY"] : nil)
+  end
+
   def age
     return nil unless date_of_birth
     today = Time.zone.today
