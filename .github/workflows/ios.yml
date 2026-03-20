@@ -85,7 +85,7 @@ jobs:
           maestro record .maestro/ --format junit --output maestro-report.xml
 
       - name: Upload Maestro test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: maestro-report
@@ -93,7 +93,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Maestro recordings
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: maestro-recordings
@@ -101,7 +101,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Maestro screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: maestro-screenshots
