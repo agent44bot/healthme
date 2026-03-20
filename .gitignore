@@ -40,3 +40,4 @@ ios/App/App/public/
 xcuserdata/
 *.xcuserdatad
 
+/vendor/bundle/
