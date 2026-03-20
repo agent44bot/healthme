@@ -488,6 +488,31 @@ select.form-input { appearance: auto; }
   accent-color: var(--color-primary);
   cursor: pointer;
 }
+.voice-input-row {
+  margin-bottom: 16px;
+}
+.btn-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 15px;
+}
+.btn-voice svg { flex-shrink: 0; }
+.btn-voice.listening {
+  color: #e53e3e;
+  border-color: #e53e3e;
+  animation: pulse-mic 1.2s ease-in-out infinite;
+}
+.voice-status {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
 .form-actions {
   display: flex;
   gap: 10px;

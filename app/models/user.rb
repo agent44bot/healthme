@@ -36,7 +36,12 @@ class User < ApplicationRecord
   # Users with their own key always use it. The system key (ENV) is only
   # available to admin users — everyone else must provide their own.
   def effective_api_key
-    anthropic_api_key.presence || (admin? ? ENV["ANTHROPIC_API_KEY"] : nil)
+    key = begin
+      anthropic_api_key.presence
+    rescue ActiveRecord::Encryption::Errors::Decryption
+      nil
+    end
+    key || (admin? ? ENV["ANTHROPIC_API_KEY"] : nil)
   end
 
   def age

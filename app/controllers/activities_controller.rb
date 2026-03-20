@@ -152,6 +152,19 @@ class ActivitiesController < ApplicationController
     end
   end
 
+  def parse_voice
+    result = VoiceActivityParser.parse(
+      transcript: params[:transcript],
+      api_key: current_user.effective_api_key
+    )
+
+    if result
+      render json: result
+    else
+      render json: { error: "Could not parse activity" }, status: :unprocessable_entity
+    end
+  end
+
   def quick_update
     add = params[:add_value].to_f
     @activity.update!(value: (@activity.value || 0) + add)

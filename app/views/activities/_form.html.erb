@@ -1,4 +1,4 @@
-<%= form_with(model: activity, class: "activity-form", data: { controller: "calorie-estimator category-fields fasting-guard bp-analyzer med-analyzer sleep-analyzer", estimate_url: estimate_calories_activities_path, bp_analyzer_url: analyze_bp_activities_path, med_analyzer_url: analyze_medication_activities_path, sleep_analyzer_url: analyze_sleep_activities_path, fasting_guard_start_hour_value: current_user.effective_fasting_start_hour }) do |f| %>
+<%= form_with(model: activity, class: "activity-form", data: { controller: "calorie-estimator category-fields fasting-guard bp-analyzer med-analyzer sleep-analyzer voice-activity", estimate_url: estimate_calories_activities_path, bp_analyzer_url: analyze_bp_activities_path, med_analyzer_url: analyze_medication_activities_path, sleep_analyzer_url: analyze_sleep_activities_path, fasting_guard_start_hour_value: current_user.effective_fasting_start_hour, voice_activity_url_value: parse_voice_activities_path }) do |f| %>
   <% if activity.errors.any? %>
     <div class="form-errors">
       <h4><%= pluralize(activity.errors.count, "error") %> prevented saving:</h4>
@@ -9,6 +9,18 @@
       </ul>
     </div>
   <% end %>
+
+  <div class="voice-input-row">
+    <button type="button" class="btn btn-outline btn-voice" data-voice-activity-target="mic" data-action="voice-activity#toggleDictation" title="Speak to fill form">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+      <span>Speak to add activity</span>
+    </button>
+    <span class="voice-status" style="display:none;" data-voice-activity-target="status"></span>
+  </div>
 
   <div class="form-group">
     <%= f.label :category %>
@@ -118,7 +130,7 @@
     <%= f.label :repeat_daily, "Repeat daily" %>
     <span class="form-hint">Show as a quick-add tag every day</span>
   </div>
-  <input type="hidden" value="<%= form_authenticity_token %>" data-calorie-estimator-target="csrfToken" data-bp-analyzer-target="csrfToken" data-med-analyzer-target="csrfToken" data-sleep-analyzer-target="csrfToken">
+  <input type="hidden" value="<%= form_authenticity_token %>" data-calorie-estimator-target="csrfToken" data-bp-analyzer-target="csrfToken" data-med-analyzer-target="csrfToken" data-sleep-analyzer-target="csrfToken" data-voice-activity-target="csrfToken">
 
   <div class="form-actions">
     <%= f.submit class: "btn btn-primary", data: { action: "click->fasting-guard#checkSubmit" } %>

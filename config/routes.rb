@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     post :duplicate, on: :member
     post :dismiss_repeat, on: :member
     post :estimate_calories, on: :collection
+    post :parse_voice, on: :collection
     post :analyze_bp, on: :collection
     post :analyze_medication, on: :collection
     post :analyze_sleep, on: :collection
